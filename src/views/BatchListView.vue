@@ -48,7 +48,7 @@
             <td colspan="5" class="empty-state">표시할 배치 요청이 없습니다.</td>
           </tr>
           <tr v-for="batch in batches" :key="batch.id" @click="$router.push(`/batches/${batch.id}`)">
-            <td class="col-name">{{ batch.name }}</td>
+            <td class="col-name">{{ batch.label }}</td>
             <td class="col-model"><span class="badge badge-model">{{ batch.model }}</span></td>
             <td class="col-status">
               <span :class="['status-indicator', getStatusClass(batch.status)]"></span>
@@ -114,9 +114,10 @@ const loadBatches = async () => {
       status: currentFilter.value === 'all' ? undefined : currentFilter.value
     }
     const response = await fetchBatches(params)
-    // API 응답 구조가 { data: [], totalPages: N } 이라고 가정
-    batches.value = response.data || []
-    totalPages.value = response.totalPages || 1
+    // API 응답 구조: { success: true, data: { content: [], totalPages: N, ... }, error: null }
+    const result = response.data
+    batches.value = result.content || []
+    totalPages.value = result.totalPages || 1
   } catch (error) {
     console.error('Failed to fetch batches:', error)
   } finally {
