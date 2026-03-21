@@ -323,6 +323,7 @@ onMounted(() => {
 .batch-table {
   width: 100%;
   border-collapse: collapse;
+  table-layout: fixed;
 }
 
 .batch-table th {
@@ -356,8 +357,7 @@ onMounted(() => {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 0;
-  width: 40%;
+  width: auto;
 }
 
 .col-model {
