@@ -124,8 +124,8 @@ const errors = reactive({
 const loadModels = async () => {
   try {
     const response = await fetchModels()
-    if (response.data && response.data.success) {
-      models.value = response.data.data || []
+    if (response.success) {
+      models.value = response.data || []
     }
   } catch (error) {
     console.error('Failed to load models:', error)
@@ -163,10 +163,10 @@ const handleSubmit = async () => {
     }
     
     const response = await createBatch(payload)
-    if (response.data && response.data.success) {
+    if (response.success) {
       router.push('/batches')
     } else {
-      alert('요청 생성에 실패했습니다: ' + (response.data?.error?.message || '알 수 없는 오류'))
+      alert('요청 생성에 실패했습니다: ' + (response.error?.message || '알 수 없는 오류'))
     }
   } catch (error) {
     console.error('Failed to create batch:', error)

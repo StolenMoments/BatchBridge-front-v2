@@ -115,9 +115,11 @@ const loadBatches = async () => {
     }
     const response = await fetchBatches(params)
     // API 응답 구조: { success: true, data: { content: [], totalPages: N, ... }, error: null }
-    const result = response.data
-    batches.value = result.content || []
-    totalPages.value = result.totalPages || 1
+    if (response.success) {
+      const result = response.data
+      batches.value = result.content || []
+      totalPages.value = result.totalPages || 1
+    }
   } catch (error) {
     console.error('Failed to fetch batches:', error)
   } finally {
