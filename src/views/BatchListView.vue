@@ -175,8 +175,8 @@ onMounted(() => {
 
 <style scoped>
 .batch-list-container {
-  width: 75%;
-  max-width: 1600px;
+  width: 90%;
+  max-width: 1800px;
   margin: 0 auto;
   padding: 60px 0;
   text-align: left;
@@ -353,6 +353,24 @@ onMounted(() => {
 
 .col-name {
   font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 300px;
+}
+
+.col-model {
+  white-space: nowrap;
+}
+
+.col-status {
+  white-space: nowrap;
+  min-width: 100px;
+}
+
+.col-date {
+  white-space: nowrap;
+  min-width: 160px;
 }
 
 .badge-model {
