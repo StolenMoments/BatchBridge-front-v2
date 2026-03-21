@@ -1,7 +1,7 @@
 <template>
   <div class="batch-detail" v-if="batch">
     <header class="batch-header">
-      <h2>배치명: {{ batch.name }}</h2>
+      <h2>배치명: {{ batch.label }}</h2>
       <p>모델: {{ batch.model_id }} | 상태: {{ getStatusLabel(batch.status) }}</p>
     </header>
 
