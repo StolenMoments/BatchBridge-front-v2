@@ -97,11 +97,10 @@ const loadBatch = async () => {
   try {
     loading.value = true
     const response = await fetchBatchDetail(batchId)
-    batch.value = response.data
-    // API 명세에 따라 prompts가 batch 객체에 포함되어 있거나 따로 가져와야 할 수 있음.
-    // 여기서는 batch.prompts에 포함되어 있다고 가정하거나, 
-    // fetchBatchDetail이 모든 정보를 준다고 가정.
-    prompts.value = response.data.prompts || []
+    if (response.success) {
+      batch.value = response.data
+      prompts.value = response.data.prompts || []
+    }
   } catch (error) {
     console.error('Failed to fetch batch detail:', error)
   } finally {
@@ -129,35 +128,49 @@ const cancelEdit = () => {
 
 const savePrompt = async () => {
   try {
+    let response
     if (editingPromptId.value) {
-      await updatePrompt(batchId, editingPromptId.value, promptForm.value)
+      response = await updatePrompt(batchId, editingPromptId.value, promptForm.value)
     } else {
-      await addPrompt(batchId, promptForm.value)
+      response = await addPrompt(batchId, promptForm.value)
     }
-    await loadBatch()
-    cancelEdit()
+    
+    if (response.success) {
+      await loadBatch()
+      cancelEdit()
+    } else {
+      alert('프롬프트 저장 실패: ' + (response.error?.message || '알 수 없는 오류'))
+    }
   } catch (error) {
-    alert('프롬프트 저장 실패: ' + (error.response?.data?.message || error.message))
+    alert('프롬프트 저장 실패: ' + (error.message || '알 수 없는 오류'))
   }
 }
 
 const handleDeletePrompt = async (promptId) => {
   if (!confirm('정말 삭제하시겠습니까?')) return
   try {
-    await deletePrompt(batchId, promptId)
-    await loadBatch()
+    const response = await deletePrompt(batchId, promptId)
+    if (response.success) {
+      await loadBatch()
+    } else {
+      alert('프롬프트 삭제 실패: ' + (response.error?.message || '알 수 없는 오류'))
+    }
   } catch (error) {
-    alert('프롬프트 삭제 실패')
+    alert('프롬프트 삭제 실패: ' + (error.message || '알 수 없는 오류'))
   }
 }
 
 const handleSubmit = async () => {
   if (prompts.value.length === 0) return
   try {
-    await submitBatch(batchId)
-    router.push('/batches')
+    const response = await submitBatch(batchId)
+    if (response.success) {
+      router.push('/batches')
+    } else {
+      alert('제출 실패: ' + (response.error?.message || '알 수 없는 오류'))
+    }
   } catch (error) {
-    alert('제출 실패: ' + (error.response?.data?.message || error.message))
+    alert('제출 실패: ' + (error.message || '알 수 없는 오류'))
   }
 }
 
