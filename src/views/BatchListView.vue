@@ -99,10 +99,10 @@ const pageSize = 10
 
 const tabs = [
   { label: '전체 상태', value: 'all' },
-  { label: '대기중', value: 'pending' },
-  { label: '처리중', value: 'processing' },
-  { label: '완료', value: 'completed' },
-  { label: '실패', value: 'failed' }
+  { label: '초안', value: 'DRAFT' },
+  { label: '진행중', value: 'IN_PROGRESS' },
+  { label: '완료', value: 'COMPLETED' },
+  { label: '실패', value: 'FAILED' }
 ]
 
 const loadBatches = async () => {
@@ -139,10 +139,10 @@ const changePage = (page) => {
 
 const getStatusLabel = (status) => {
   const statusMap = {
-    pending: '대기중',
-    processing: '처리중',
-    completed: '완료',
-    failed: '실패'
+    DRAFT: '초안',
+    IN_PROGRESS: '진행중',
+    COMPLETED: '완료',
+    FAILED: '실패'
   }
   return statusMap[status] || status
 }
@@ -371,10 +371,10 @@ onMounted(() => {
   margin-right: 8px;
 }
 
-.status-pending { background-color: #94a3b8; }
-.status-processing { background-color: #3b82f6; animation: pulse 2s infinite; }
-.status-completed { background-color: #10b981; }
-.status-failed { background-color: #ef4444; }
+.status-DRAFT { background-color: #94a3b8; }
+.status-IN_PROGRESS { background-color: #3b82f6; animation: pulse 2s infinite; }
+.status-COMPLETED { background-color: #10b981; }
+.status-FAILED { background-color: #ef4444; }
 
 @keyframes pulse {
   0% { opacity: 1; }
