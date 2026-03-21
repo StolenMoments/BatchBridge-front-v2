@@ -2,7 +2,7 @@
   <div class="batch-detail" v-if="batch">
     <header class="batch-header">
       <h2>배치명: {{ batch.name }}</h2>
-      <p>모델: {{ batch.model_id }} | 상태: {{ batch.status === 'DRAFT' ? '초안' : batch.status }}</p>
+      <p>모델: {{ batch.model_id }} | 상태: {{ getStatusLabel(batch.status) }}</p>
     </header>
 
     <div v-if="batch.status === 'DRAFT'" class="draft-container">
@@ -159,6 +159,16 @@ const handleSubmit = async () => {
   } catch (error) {
     alert('제출 실패: ' + (error.response?.data?.message || error.message))
   }
+}
+
+const getStatusLabel = (status) => {
+  const statusMap = {
+    DRAFT: '초안',
+    IN_PROGRESS: '진행중',
+    COMPLETED: '완료',
+    FAILED: '실패'
+  }
+  return statusMap[status] || status
 }
 
 onMounted(loadBatch)
