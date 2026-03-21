@@ -109,7 +109,7 @@ const loadBatches = async () => {
   loading.value = true
   try {
     const params = {
-      page: currentPage.value,
+      page: currentPage.value - 1,
       size: pageSize,
       status: currentFilter.value === 'all' ? undefined : currentFilter.value
     }
