@@ -48,7 +48,7 @@
             <td colspan="5" class="empty-state">표시할 배치 요청이 없습니다.</td>
           </tr>
           <tr v-for="batch in batches" :key="batch.id" @click="$router.push(`/batches/${batch.id}`)">
-            <td class="col-name">{{ batch.label }}</td>
+            <td class="col-name">{{ batch.name }}</td>
             <td class="col-model"><span class="badge badge-model">{{ batch.model }}</span></td>
             <td class="col-status">
               <span :class="['status-indicator', getStatusClass(batch.status)]"></span>
@@ -109,7 +109,7 @@ const loadBatches = async () => {
   loading.value = true
   try {
     const params = {
-      page: currentPage.value - 1,
+      page: currentPage.value,
       size: pageSize,
       status: currentFilter.value === 'all' ? undefined : currentFilter.value
     }
