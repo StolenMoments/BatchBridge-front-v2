@@ -110,7 +110,7 @@ const loadBatches = async () => {
   try {
     const params = {
       page: currentPage.value,
-      limit: pageSize,
+      size: pageSize,
       status: currentFilter.value === 'all' ? undefined : currentFilter.value
     }
     const response = await fetchBatches(params)
