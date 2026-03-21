@@ -357,21 +357,24 @@ onMounted(() => {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  width: auto;
+  width: 35%;
 }
 
 .col-model {
   white-space: nowrap;
+  width: 15%;
 }
 
 .col-status {
   white-space: nowrap;
   min-width: 100px;
+  width: 15%;
 }
 
 .col-date {
   white-space: nowrap;
   min-width: 160px;
+  width: 17.5%;
 }
 
 .badge-model {
