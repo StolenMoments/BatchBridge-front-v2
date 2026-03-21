@@ -175,10 +175,10 @@ onMounted(() => {
 
 <style scoped>
 .batch-list-container {
-  width: 90%;
-  max-width: 1800px;
-  margin: 0 auto;
-  padding: 60px 0;
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 60px 40px;
   text-align: left;
 }
 
