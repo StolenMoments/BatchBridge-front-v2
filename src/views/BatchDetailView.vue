@@ -54,20 +54,15 @@
 
       <!-- 프롬프트 목록 -->
       <div class="prompt-list">
-        <div v-for="(prompt, index) in prompts" :key="prompt.id" class="prompt-card card">
+        <div v-for="(prompt, index) in prompts" :key="prompt.id" class="prompt-card card clickable-row" @click="startEdit(prompt)">
           <div class="prompt-info">
             <div class="prompt-card-header">
               <h4>질문 {{ index + 1 }}</h4>
               <span v-if="prompt.label" class="prompt-label-text">{{ prompt.label }}</span>
             </div>
-            <div class="prompt-content-preview">
-              <p v-if="prompt.systemPrompt" class="system-preview"><strong>System:</strong> {{ prompt.systemPrompt }}</p>
-              <p><strong>User:</strong> {{ prompt.userPrompt }}</p>
-            </div>
           </div>
           <div class="prompt-actions">
-            <button @click="startEdit(prompt)" class="btn-sm">수정</button>
-            <button @click="handleDeletePrompt(prompt.id)" class="btn-sm btn-danger">삭제</button>
+            <button @click.stop="handleDeletePrompt(prompt.id)" class="btn-sm btn-danger">삭제</button>
           </div>
         </div>
       </div>
@@ -90,31 +85,12 @@
         <div v-for="(prompt, index) in prompts" :key="prompt.id" class="result-card card" :class="prompt.status.toLowerCase()">
           <div class="result-header">
             <div class="result-title">
-              <h4>질문 {{ index + 1 }}</h4>
-              <span v-if="prompt.label" class="result-label">{{ prompt.label }}</span>
+              <router-link :to="`/batches/${batchId}/prompts/${prompt.id}`" class="prompt-link">
+                <h4>질문 {{ index + 1 }}</h4>
+                <span v-if="prompt.label" class="result-label">{{ prompt.label }}</span>
+              </router-link>
             </div>
             <span class="status-badge-sm" :class="prompt.status.toLowerCase()">{{ prompt.status }}</span>
-          </div>
-
-          <div class="result-body">
-            <div class="input-section">
-              <p v-if="prompt.systemPrompt" class="system-text"><strong>System:</strong> {{ prompt.systemPrompt }}</p>
-              <p class="user-text"><strong>User:</strong> {{ prompt.userPrompt }}</p>
-            </div>
-            
-            <hr class="divider" />
-
-            <div v-if="prompt.status === 'COMPLETED'" class="answer-section">
-              <strong>Answer:</strong>
-              <div class="markdown-body" v-html="renderMarkdown(prompt.responseContent)"></div>
-            </div>
-            <div v-else-if="prompt.status === 'FAILED'" class="error-section">
-              <strong>에러:</strong>
-              <p class="error-msg">{{ prompt.errorMessage || '알 수 없는 오류가 발생했습니다.' }}</p>
-            </div>
-            <div v-else class="pending-section">
-              <p>응답 대기 중...</p>
-            </div>
           </div>
         </div>
       </div>
@@ -404,6 +380,29 @@ onMounted(loadBatch)
   outline: none;
   border-color: #80bdff;
   box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+}
+
+.clickable-row {
+  cursor: pointer;
+}
+
+.prompt-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: inherit;
+  transition: opacity 0.2s;
+}
+
+.prompt-link:hover {
+  opacity: 0.7;
+}
+
+.prompt-link h4 {
+  color: #007bff;
+  margin: 0;
+  text-decoration: underline;
 }
 
 .prompt-card {
