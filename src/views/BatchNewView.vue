@@ -180,7 +180,7 @@ const handleSubmit = async () => {
     
     const response = await createBatch(payload)
     if (response.success) {
-      const batchId = response.data.data?.id
+      const batchId = response.data?.id
       router.push(`/batches/${batchId}`)
     } else {
       alert('요청 생성에 실패했습니다: ' + (response.data?.error?.message || '알 수 없는 오류'))

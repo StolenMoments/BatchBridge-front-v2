@@ -35,6 +35,7 @@
           <tr>
             <th>요청 이름</th>
             <th>모델</th>
+            <th>프롬프트</th>
             <th>상태</th>
             <th>생성일시</th>
             <th>완료일시</th>
@@ -42,14 +43,18 @@
         </thead>
         <tbody>
           <tr v-if="loading && batches.length === 0">
-            <td colspan="5" class="empty-state">데이터를 불러오는 중...</td>
+            <td colspan="6" class="empty-state">데이터를 불러오는 중...</td>
           </tr>
           <tr v-else-if="batches.length === 0">
-            <td colspan="5" class="empty-state">표시할 배치 요청이 없습니다.</td>
+            <td colspan="6" class="empty-state">표시할 배치 요청이 없습니다.</td>
           </tr>
           <tr v-for="batch in batches" :key="batch.id" @click="$router.push(`/batches/${batch.id}`)">
-            <td class="col-name">{{ batch.label }}</td>
+            <td class="col-name">
+              <span v-if="batch.status === 'DRAFT'" class="draft-icon" title="초안">📝</span>
+              {{ batch.label }}
+            </td>
             <td class="col-model"><span class="badge badge-model">{{ batch.model }}</span></td>
+            <td class="col-count">{{ batch.promptCount || 0 }}개</td>
             <td class="col-status">
               <span :class="['status-indicator', getStatusClass(batch.status)]"></span>
               {{ getStatusLabel(batch.status) }}
@@ -359,12 +364,17 @@ onMounted(() => {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  width: 35%;
+  width: 30%;
 }
 
 .col-model {
   white-space: nowrap;
   width: 15%;
+}
+
+.col-count {
+  white-space: nowrap;
+  width: 10%;
 }
 
 .col-status {
@@ -376,7 +386,12 @@ onMounted(() => {
 .col-date {
   white-space: nowrap;
   min-width: 160px;
-  width: 17.5%;
+  width: 15%;
+}
+
+.draft-icon {
+  margin-right: 8px;
+  font-size: 14px;
 }
 
 .badge-model {
