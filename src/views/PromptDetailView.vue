@@ -52,6 +52,7 @@ import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { fetchPromptDetail } from '@/api/prompt'
 import { marked } from 'marked'
+import DOMPurify from 'dompurify'
 import type { Prompt } from '@/types/api'
 
 const route = useRoute()
@@ -78,7 +79,8 @@ const loadPrompt = async () => {
 
 const renderMarkdown = (content: string | null | undefined): string => {
   if (!content) return ''
-  return marked.parse(content) as string
+  const rawHtml = marked.parse(content) as string
+  return DOMPurify.sanitize(rawHtml)
 }
 
 const goBack = () => {
