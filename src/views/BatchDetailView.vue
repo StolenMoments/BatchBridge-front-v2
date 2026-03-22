@@ -292,8 +292,6 @@ onMounted(loadBatch)
 
 <style scoped>
 .batch-detail {
-  max-width: 1400px;
-  margin: 0 auto;
   padding: 60px 40px;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   color: #333;
