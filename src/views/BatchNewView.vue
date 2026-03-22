@@ -111,17 +111,32 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, onMounted, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { fetchModels, createBatch } from '@/api/batch'
 
-const router = useRouter()
-const models = ref([])
-const submitting = ref(false)
-const isSystemPromptOpen = ref(false)
+import type { Model } from '@/types/api'
 
-const form = reactive({
+interface BatchForm {
+  model: string
+  label: string
+  promptLabel: string
+  systemPrompt: string
+  userPrompt: string
+}
+
+interface BatchErrors {
+  model: string
+  userPrompt: string
+}
+
+const router = useRouter()
+const models = ref<Model[]>([])
+const submitting = ref<boolean>(false)
+const isSystemPromptOpen = ref<boolean>(false)
+
+const form = reactive<BatchForm>({
   model: '',
   label: '',
   promptLabel: '',
@@ -129,12 +144,12 @@ const form = reactive({
   userPrompt: ''
 })
 
-const errors = reactive({
+const errors = reactive<BatchErrors>({
   model: '',
   userPrompt: ''
 })
 
-const loadModels = async () => {
+const loadModels = async (): Promise<void> => {
   try {
     const response = await fetchModels()
     if (response.success) {
@@ -145,7 +160,7 @@ const loadModels = async () => {
   }
 }
 
-const validate = () => {
+const validate = (): boolean => {
   let isValid = true
   errors.model = ''
   errors.userPrompt = ''
@@ -163,7 +178,7 @@ const validate = () => {
   return isValid
 }
 
-const handleSubmit = async () => {
+const handleSubmit = async (): Promise<void> => {
   if (!validate()) return
 
   submitting.value = true
@@ -180,10 +195,10 @@ const handleSubmit = async () => {
     
     const response = await createBatch(payload)
     if (response.success) {
-      const batchId = response.data?.id
+      const batchId = response.data!.id
       router.push(`/batches/${batchId}`)
     } else {
-      alert('요청 생성에 실패했습니다: ' + (response.data?.error?.message || '알 수 없는 오류'))
+      alert('요청 생성에 실패했습니다: ' + (response.error?.message || '알 수 없는 오류'))
     }
   } catch (error) {
     console.error('Failed to create batch:', error)

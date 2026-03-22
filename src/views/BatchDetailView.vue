@@ -4,7 +4,7 @@
       <div class="header-main">
         <h2>배치명: {{ batch.label }}</h2>
         <div class="status-info">
-          <span class="model-badge">{{ batch.model_id }}</span>
+          <span class="model-badge">{{ batch.model }}</span>
           <span class="status-badge" :class="batch.status.toLowerCase()">
             {{ getStatusLabel(batch.status) }}
           </span>
@@ -134,39 +134,49 @@
   </div>
 </template>
 
-<script setup>
-import { ref, onMounted, computed } from 'vue'
+<script setup lang="ts">
+import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { fetchBatchDetail, submitBatch, syncBatch } from '@/api/batch'
 import { addPrompt, updatePrompt, deletePrompt } from '@/api/prompt'
 import { marked } from 'marked'
 
+import type { Prompt } from '@/types/api'
+
+import type { BatchDetail } from '@/types/api'
+
+type Batch = BatchDetail
+
+import type { CreatePromptRequest } from '@/types/api'
+
+type PromptForm = CreatePromptRequest
+
 const route = useRoute()
 const router = useRouter()
-const batchId = route.params.id
+const batchId = route.params.id as string
 
-const batch = ref(null)
-const prompts = ref([])
-const loading = ref(true)
-const syncing = ref(false)
+const batch = ref<Batch | null>(null)
+const prompts = ref<Prompt[]>([])
+const loading = ref<boolean>(true)
+const syncing = ref<boolean>(false)
 
 // 폼 상태
-const showAddForm = ref(false)
-const editingPromptId = ref(null)
-const showSystemPrompt = ref(false)
-const promptForm = ref({
+const showAddForm = ref<boolean>(false)
+const editingPromptId = ref<string | number | null>(null)
+const showSystemPrompt = ref<boolean>(false)
+const promptForm = ref<PromptForm>({
   label: '',
   systemPrompt: '',
   userPrompt: ''
 })
 
-const loadBatch = async () => {
+const loadBatch = async (): Promise<void> => {
   try {
     loading.value = true
     const response = await fetchBatchDetail(batchId)
     if (response.success) {
-      batch.value = response.data
-      prompts.value = response.data.prompts || []
+      batch.value = response.data!
+      prompts.value = response.data!.prompts || []
     }
   } catch (error) {
     console.error('Failed to fetch batch detail:', error)
@@ -175,7 +185,7 @@ const loadBatch = async () => {
   }
 }
 
-const handleSync = async () => {
+const handleSync = async (): Promise<void> => {
   try {
     syncing.value = true
     const response = await syncBatch(batchId)
@@ -184,14 +194,14 @@ const handleSync = async () => {
     } else {
       alert('동기화 실패: ' + (response.error?.message || '알 수 없는 오류'))
     }
-  } catch (error) {
-    alert('동기화 중 오류 발생: ' + error.message)
+  } catch (error: unknown) {
+    alert('동기화 중 오류 발생: ' + (error as Error).message)
   } finally {
     syncing.value = false
   }
 }
 
-const startEdit = (prompt) => {
+const startEdit = (prompt: Prompt): void => {
   editingPromptId.value = prompt.id
   promptForm.value = {
     label: prompt.label || '',
@@ -202,14 +212,14 @@ const startEdit = (prompt) => {
   showAddForm.value = false
 }
 
-const cancelEdit = () => {
+const cancelEdit = (): void => {
   showAddForm.value = false
   editingPromptId.value = null
   promptForm.value = { label: '', systemPrompt: '', userPrompt: '' }
   showSystemPrompt.value = false
 }
 
-const savePrompt = async () => {
+const savePrompt = async (): Promise<void> => {
   try {
     let response
     if (editingPromptId.value) {
@@ -224,12 +234,12 @@ const savePrompt = async () => {
     } else {
       alert('프롬프트 저장 실패: ' + (response.error?.message || '알 수 없는 오류'))
     }
-  } catch (error) {
-    alert('프롬프트 저장 실패: ' + (error.message || '알 수 없는 오류'))
+  } catch (error: unknown) {
+    alert('프롬프트 저장 실패: ' + ((error as Error).message || '알 수 없는 오류'))
   }
 }
 
-const handleDeletePrompt = async (promptId) => {
+const handleDeletePrompt = async (promptId: string | number): Promise<void> => {
   if (!confirm('정말 삭제하시겠습니까?')) return
   try {
     const response = await deletePrompt(batchId, promptId)
@@ -238,12 +248,12 @@ const handleDeletePrompt = async (promptId) => {
     } else {
       alert('프롬프트 삭제 실패: ' + (response.error?.message || '알 수 없는 오류'))
     }
-  } catch (error) {
-    alert('프롬프트 삭제 실패: ' + (error.message || '알 수 없는 오류'))
+  } catch (error: unknown) {
+    alert('프롬프트 삭제 실패: ' + ((error as Error).message || '알 수 없는 오류'))
   }
 }
 
-const handleSubmit = async () => {
+const handleSubmit = async (): Promise<void> => {
   try {
     const response = await submitBatch(batchId)
     if (response.success) {
@@ -251,13 +261,13 @@ const handleSubmit = async () => {
     } else {
       alert('제출 실패: ' + (response.error?.message || '알 수 없는 오류'))
     }
-  } catch (error) {
-    alert('제출 실패: ' + (error.message || '알 수 없는 오류'))
+  } catch (error: unknown) {
+    alert('제출 실패: ' + ((error as Error).message || '알 수 없는 오류'))
   }
 }
 
-const getStatusLabel = (status) => {
-  const statusMap = {
+const getStatusLabel = (status: string): string => {
+  const statusMap: Record<string, string> = {
     DRAFT: '초안',
     IN_PROGRESS: '처리중',
     COMPLETED: '완료',
@@ -266,15 +276,15 @@ const getStatusLabel = (status) => {
   return statusMap[status] || status
 }
 
-const formatDate = (dateStr) => {
+const formatDate = (dateStr?: string): string => {
   if (!dateStr) return '-'
   const d = new Date(dateStr)
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`
 }
 
-const renderMarkdown = (content) => {
+const renderMarkdown = (content?: string): string => {
   if (!content) return ''
-  return marked(content)
+  return marked(content) as string
 }
 
 onMounted(loadBatch)

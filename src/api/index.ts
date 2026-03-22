@@ -14,4 +14,12 @@ api.interceptors.response.use(
   }
 )
 
+export interface ApiResponse<T = unknown> {
+  success: boolean;
+  data?: T;
+  error?: {
+    message: string;
+  };
+}
+
 export default api

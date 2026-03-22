@@ -12,7 +12,7 @@
         <select 
           class="filter-select"
           v-model="currentFilter"
-          @change="setFilter($event.target.value)"
+          @change="setFilter(($event.target as HTMLSelectElement).value)"
         >
           <option v-for="tab in tabs" :key="tab.value" :value="tab.value">
             {{ tab.label }}
@@ -91,18 +91,27 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, onMounted, watch } from 'vue'
 import { fetchBatches } from '@/api/batch'
 
-const batches = ref([])
-const loading = ref(false)
-const currentFilter = ref('all')
-const currentPage = ref(1)
-const totalPages = ref(1)
+import type { BatchListItem } from '@/types/api'
+
+type Batch = BatchListItem
+
+interface Tab {
+  label: string
+  value: string
+}
+
+const batches = ref<Batch[]>([])
+const loading = ref<boolean>(false)
+const currentFilter = ref<string>('all')
+const currentPage = ref<number>(1)
+const totalPages = ref<number>(1)
 const pageSize = 10
 
-const tabs = [
+const tabs: Tab[] = [
   { label: '전체 상태', value: 'all' },
   { label: '초안', value: 'DRAFT' },
   { label: '진행중', value: 'IN_PROGRESS' },
@@ -110,7 +119,7 @@ const tabs = [
   { label: '실패', value: 'FAILED' }
 ]
 
-const loadBatches = async () => {
+const loadBatches = async (): Promise<void> => {
   loading.value = true
   try {
     const params = {
@@ -121,7 +130,7 @@ const loadBatches = async () => {
     const response = await fetchBatches(params)
     // API 응답 구조: { success: true, data: { content: [], totalPages: N, ... }, error: null }
     if (response.success) {
-      const result = response.data
+      const result = response.data!
       batches.value = result.content || []
       totalPages.value = result.totalPages || 1
     }
@@ -132,21 +141,21 @@ const loadBatches = async () => {
   }
 }
 
-const refreshList = () => {
+const refreshList = (): void => {
   loadBatches()
 }
 
-const setFilter = (value) => {
+const setFilter = (value: string): void => {
   currentFilter.value = value
   currentPage.value = 1
 }
 
-const changePage = (page) => {
+const changePage = (page: number): void => {
   currentPage.value = page
 }
 
-const getStatusLabel = (status) => {
-  const statusMap = {
+const getStatusLabel = (status: string): string => {
+  const statusMap: Record<string, string> = {
     DRAFT: '초안',
     IN_PROGRESS: '진행중',
     COMPLETED: '완료',
@@ -155,11 +164,11 @@ const getStatusLabel = (status) => {
   return statusMap[status] || status
 }
 
-const getStatusClass = (status) => {
+const getStatusClass = (status: string): string => {
   return `status-${status}`
 }
 
-const formatDate = (dateString) => {
+const formatDate = (dateString?: string): string | null => {
   if (!dateString) return null
   const date = new Date(dateString)
   return date.toLocaleString('ko-KR', {
