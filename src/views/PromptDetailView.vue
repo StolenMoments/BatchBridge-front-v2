@@ -79,7 +79,9 @@ const loadPrompt = async () => {
 
 const renderMarkdown = (content: string | null | undefined): string => {
   if (!content) return ''
-  const rawHtml = marked.parse(content) as string
+  // <script> 등 HTML 태그가 텍스트로 보이도록 이스케이프 처리
+  const escapedContent = content.replace(/</g, '&lt;').replace(/>/g, '&gt;')
+  const rawHtml = marked.parse(escapedContent) as string
   return DOMPurify.sanitize(rawHtml)
 }
 

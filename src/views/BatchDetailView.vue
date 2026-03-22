@@ -116,6 +116,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { fetchBatchDetail, submitBatch, syncBatch } from '@/api/batch'
 import { addPrompt, updatePrompt, deletePrompt } from '@/api/prompt'
 import { marked } from 'marked'
+import DOMPurify from 'dompurify'
 
 import type { Prompt } from '@/types/api'
 
@@ -260,7 +261,10 @@ const formatDate = (dateStr?: string): string => {
 
 const renderMarkdown = (content?: string): string => {
   if (!content) return ''
-  return marked(content) as string
+  // <script> 등 HTML 태그가 텍스트로 보이도록 이스케이프 처리
+  const escapedContent = content.replace(/</g, '&lt;').replace(/>/g, '&gt;')
+  const rawHtml = marked.parse(escapedContent) as string
+  return DOMPurify.sanitize(rawHtml)
 }
 
 onMounted(loadBatch)
