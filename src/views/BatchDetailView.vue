@@ -504,23 +504,6 @@ onMounted(loadBatch)
   margin: 15px 0;
 }
 
-.markdown-body {
-  margin-top: 10px;
-  padding: 15px;
-  background-color: #fafafa;
-  border-radius: 8px;
-  line-height: 1.7;
-}
-
-.error-section {
-  color: #721c24;
-  background-color: #fff5f5;
-  padding: 15px;
-  border-radius: 8px;
-}
-
-.error-msg { margin-top: 5px; }
-
 .btn-primary { background-color: #007bff; color: white; border: none; padding: 12px 20px; border-radius: 6px; cursor: pointer; font-weight: 600; }
 .btn-success { background-color: #28a745; color: white; border: none; padding: 10px 18px; border-radius: 6px; cursor: pointer; font-weight: 600; }
 .btn-secondary { background-color: #6c757d; color: white; border: none; padding: 10px 18px; border-radius: 6px; cursor: pointer; font-weight: 600; }
