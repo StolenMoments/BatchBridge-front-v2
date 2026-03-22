@@ -33,15 +33,27 @@
           <p v-if="errors.model" class="error-text">{{ errors.model }}</p>
         </div>
 
-        <!-- 라벨 입력 -->
+      <!-- 배치 라벨 입력 -->
         <div class="form-group">
-          <label for="label-input">라벨 (선택)</label>
+          <label for="label-input">배치 라벨 (선택)</label>
           <input 
             type="text" 
             id="label-input" 
             v-model="form.label" 
             class="form-input" 
             placeholder="이 작업의 이름을 입력하세요 (미입력 시 자동 생성)"
+          />
+        </div>
+
+        <!-- 프롬프트 라벨 입력 -->
+        <div class="form-group">
+          <label for="prompt-label-input">프롬프트 라벨 (선택)</label>
+          <input 
+            type="text" 
+            id="prompt-label-input" 
+            v-model="form.promptLabel" 
+            class="form-input" 
+            placeholder="이 프롬프트의 설명을 입력하세요"
           />
         </div>
 
@@ -112,6 +124,7 @@ const isSystemPromptOpen = ref(false)
 const form = reactive({
   model: '',
   label: '',
+  promptLabel: '',
   systemPrompt: '',
   userPrompt: ''
 })
@@ -158,13 +171,17 @@ const handleSubmit = async () => {
     const payload = {
       model: form.model,
       label: form.label || undefined,
-      systemPrompt: form.systemPrompt || undefined,
-      userPrompt: form.userPrompt
+      prompt: {
+        label: form.promptLabel || undefined,
+        systemPrompt: form.systemPrompt || undefined,
+        userPrompt: form.userPrompt
+      }
     }
     
     const response = await createBatch(payload)
     if (response.data && response.data.success) {
-      router.push('/batches')
+      const batchId = response.data.data?.id
+      router.push(`/batches/${batchId}`)
     } else {
       alert('요청 생성에 실패했습니다: ' + (response.data?.error?.message || '알 수 없는 오류'))
     }
