@@ -11,9 +11,9 @@
         </div>
       </div>
       <div class="header-sub">
-        <p v-if="batch.status === 'DRAFT'">생성일시: {{ formatDate(batch.created_at) }}</p>
-        <p v-else-if="batch.completed_at">완료일시: {{ formatDate(batch.completed_at) }}</p>
-        <p v-else-if="batch.submitted_at">제출일시: {{ formatDate(batch.submitted_at) }}</p>
+        <p v-if="batch.status === 'DRAFT'">생성일시: {{ formatDate(batch.createdAt) }}</p>
+        <p v-else-if="batch.completedAt">완료일시: {{ formatDate(batch.completedAt) }}</p>
+        <p v-else-if="batch.submittedAt">제출일시: {{ formatDate(batch.submittedAt) }}</p>
         
         <button v-if="batch.status === 'IN_PROGRESS'" @click="handleSync" class="btn-sync" :disabled="syncing">
           {{ syncing ? '동기화 중...' : '동기화' }}
@@ -38,15 +38,15 @@
           <label @click="showSystemPrompt = !showSystemPrompt" class="clickable">
             System Prompt (선택) {{ showSystemPrompt ? '▼' : '▶' }}
           </label>
-          <textarea v-if="showSystemPrompt" v-model="promptForm.system_prompt" rows="3" placeholder="시스템 역할을 정의하세요..."></textarea>
+          <textarea v-if="showSystemPrompt" v-model="promptForm.systemPrompt" rows="3" placeholder="시스템 역할을 정의하세요..."></textarea>
         </div>
         <div class="form-group">
           <label>User Prompt (필수)</label>
-          <textarea v-model="promptForm.user_prompt" rows="5" required placeholder="사용자 질문을 입력하세요..."></textarea>
+          <textarea v-model="promptForm.userPrompt" rows="5" required placeholder="사용자 질문을 입력하세요..."></textarea>
         </div>
-        <div class="form-actions">
+          <div class="form-actions">
           <button @click="cancelEdit" class="btn-secondary">취소</button>
-          <button @click="savePrompt" class="btn-success" :disabled="!promptForm.user_prompt">
+          <button @click="savePrompt" class="btn-success" :disabled="!promptForm.userPrompt">
             {{ editingPromptId ? '수정완료' : '추가하기' }}
           </button>
         </div>
@@ -61,8 +61,8 @@
               <span v-if="prompt.label" class="prompt-label-text">{{ prompt.label }}</span>
             </div>
             <div class="prompt-content-preview">
-              <p v-if="prompt.system_prompt" class="system-preview"><strong>System:</strong> {{ prompt.system_prompt }}</p>
-              <p><strong>User:</strong> {{ prompt.user_prompt }}</p>
+              <p v-if="prompt.systemPrompt" class="system-preview"><strong>System:</strong> {{ prompt.systemPrompt }}</p>
+              <p><strong>User:</strong> {{ prompt.userPrompt }}</p>
             </div>
           </div>
           <div class="prompt-actions">
@@ -98,19 +98,19 @@
 
           <div class="result-body">
             <div class="input-section">
-              <p v-if="prompt.system_prompt" class="system-text"><strong>System:</strong> {{ prompt.system_prompt }}</p>
-              <p class="user-text"><strong>User:</strong> {{ prompt.user_prompt }}</p>
+              <p v-if="prompt.systemPrompt" class="system-text"><strong>System:</strong> {{ prompt.systemPrompt }}</p>
+              <p class="user-text"><strong>User:</strong> {{ prompt.userPrompt }}</p>
             </div>
             
             <hr class="divider" />
 
             <div v-if="prompt.status === 'COMPLETED'" class="answer-section">
               <strong>Answer:</strong>
-              <div class="markdown-body" v-html="renderMarkdown(prompt.response_content)"></div>
+              <div class="markdown-body" v-html="renderMarkdown(prompt.responseContent)"></div>
             </div>
             <div v-else-if="prompt.status === 'FAILED'" class="error-section">
               <strong>에러:</strong>
-              <p class="error-msg">{{ prompt.error_message || '알 수 없는 오류가 발생했습니다.' }}</p>
+              <p class="error-msg">{{ prompt.errorMessage || '알 수 없는 오류가 발생했습니다.' }}</p>
             </div>
             <div v-else class="pending-section">
               <p>응답 대기 중...</p>
@@ -156,8 +156,8 @@ const editingPromptId = ref(null)
 const showSystemPrompt = ref(false)
 const promptForm = ref({
   label: '',
-  system_prompt: '',
-  user_prompt: ''
+  systemPrompt: '',
+  userPrompt: ''
 })
 
 const loadBatch = async () => {
@@ -195,17 +195,17 @@ const startEdit = (prompt) => {
   editingPromptId.value = prompt.id
   promptForm.value = {
     label: prompt.label || '',
-    system_prompt: prompt.system_prompt || '',
-    user_prompt: prompt.user_prompt || ''
+    systemPrompt: prompt.systemPrompt || '',
+    userPrompt: prompt.userPrompt || ''
   }
-  showSystemPrompt.value = !!prompt.system_prompt
+  showSystemPrompt.value = !!prompt.systemPrompt
   showAddForm.value = false
 }
 
 const cancelEdit = () => {
   showAddForm.value = false
   editingPromptId.value = null
-  promptForm.value = { label: '', system_prompt: '', user_prompt: '' }
+  promptForm.value = { label: '', systemPrompt: '', userPrompt: '' }
   showSystemPrompt.value = false
 }
 
@@ -282,9 +282,9 @@ onMounted(loadBatch)
 
 <style scoped>
 .batch-detail {
-  max-width: 1000px;
+  max-width: 1400px;
   margin: 0 auto;
-  padding: 40px 20px;
+  padding: 60px 40px;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   color: #333;
 }
